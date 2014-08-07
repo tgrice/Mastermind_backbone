@@ -3,6 +3,15 @@
 module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+
+    jst: {
+      compile: {
+        files: {
+          ".tmp/scripts/templates.js": ["scripts/templates/*.ejs"]
+        }
+      }
+    },
     coffee: {
       compileScripts: {
         expand: true,
@@ -32,7 +41,10 @@ module.exports = function (grunt) {
     }
   });
 
-  /*grunt.registerTask('createDefaultTemplate', function () {
-      grunt.file.write('.tmp/scripts/templates.js', 'this.JST = this.JST || {};');
-  });*/
+  grunt.loadNpmTasks('grunt-contrib-jst')
+
+  grunt.registerTask('default', ['jst']);
+  grunt.registerTask('compile', ['jst', 'coffee'])
+  grunt.registerTask('build', ['jst', 'coffee'])
+
 }
