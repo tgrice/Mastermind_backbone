@@ -21,6 +21,6 @@
 
   })(Backbone.View);
 
-  window.MastermindViwe = MastermindView;
+  window.MastermindView = MastermindView;
 
 }).call(this);

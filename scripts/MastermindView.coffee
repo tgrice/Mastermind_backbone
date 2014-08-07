@@ -4,4 +4,4 @@ class MastermindView extends Backbone.View
   render: ->
     @$el.html(@template())
     @
-window.MastermindViwe = MastermindView
+window.MastermindView = MastermindView
