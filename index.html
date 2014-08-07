@@ -7,12 +7,10 @@
   <body>
 
     <div class='main-title'>
-      <h1>HELLO!</h1>
+      <h1>MASTERMIND!</h1>
     </div>
 
-    <div data-id="container">
-    </div>
-
+    <div data-id="container"></div>
 
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
@@ -22,33 +20,7 @@
     <script src="bower_components/backbone/backbone.js"></script>
     <script src=".tmp/scripts/templates.js"></script>
     <script src=".tmp/scripts/MastermindView.js"></script>
-    <!--
-    <script>
-
-      $('[data-id=container]').html(new MastermindView().render().el();
-
-      $('#guess_input').focus()
-
-      $( "#mm_form" ).validate({
-        rules: {
-          guess_input: {
-            required: true,
-            minlength: 4,
-            maxlength: 4,
-            digits: true
-          }
-        },
-      });
-
-      $(function() {
-        var mmc = new MMController();
-        mmc.buttons();
-      });
-
-
-    </script>
-    -->
-
+    <script src=".tmp/scripts/app.js"></script>
   </body>
 </html>
 
