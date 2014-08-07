@@ -10,10 +10,11 @@
       return MastermindView.__super__.constructor.apply(this, arguments);
     }
 
-    MastermindView.prototype.template = JST['Mastermind_backbone/scripts/Mastermind_template.ejs'];
+    MastermindView.prototype.template = JST['scripts/templates/Mastermind_template.ejs'];
 
     MastermindView.prototype.render = function() {
-      return this.$el.html(this.template);
+      this.$el.html(this.template());
+      return this;
     };
 
     return MastermindView;

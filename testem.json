@@ -6,7 +6,7 @@
     "bower_components/underscore/underscore.js",
     "bower_components/backbone/backbone.js",
     "bower_components/jasmine-jquery/lib/jasmine-jquery.js",
-    ".tmp/scripts/template.js"
+    ".tmp/scripts/templates.js",
     ".tmp/scripts/**/*.js",
     ".tmp/spec/**/*.js"
   ]

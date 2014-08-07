@@ -12,12 +12,13 @@ module.exports = function (grunt) {
         }
       }
     },
+
     coffee: {
       compileScripts: {
         expand: true,
         flatten: true,
         cwd: 'scripts',
-        src: '**/*.coffee',
+        src: '**/**/*.coffee',
         dest: '.tmp/scripts',
         ext: '.js'
       },
@@ -41,10 +42,9 @@ module.exports = function (grunt) {
     }
   });
 
-  grunt.loadNpmTasks('grunt-contrib-jst')
+  grunt.loadNpmTasks('grunt-contrib-jst');
 
   grunt.registerTask('default', ['jst']);
-  grunt.registerTask('compile', ['jst', 'coffee'])
-  grunt.registerTask('build', ['jst', 'coffee'])
-
+  grunt.registerTask('compile', ['jst', 'coffee']);
+  grunt.registerTask('build', ['jst', 'coffee']);
 }
