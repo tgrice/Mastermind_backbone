@@ -17,6 +17,68 @@
       return this;
     };
 
+    MastermindView.prototype.events = {
+      'click [data-id=guess_button]': 'makeGuess'
+    };
+
+    MastermindView.prototype.turnNumber = 0;
+
+    MastermindView.prototype.code = '0043';
+
+    MastermindView.prototype.makeGuess = function() {
+      var feedback, guess;
+      guess = this.$('#guess_input').val();
+      feedback = this.getFeedback(guess, this.code);
+      if (this.isLose()) {
+        feedback = 'Game Over';
+      }
+      if (this.isWin(guess)) {
+        feedback = 'Victory';
+      }
+      this.$('[data-id=guess-' + this.turnNumber + ']').html(guess);
+      this.$('[data-id=feedback-' + this.turnNumber + ']').html(feedback);
+      return this.incrementTurnNumber();
+    };
+
+    MastermindView.prototype.isLose = function() {
+      return this.turnNumber === 9;
+    };
+
+    MastermindView.prototype.isWin = function(guess) {
+      return guess === this.code;
+    };
+
+    MastermindView.prototype.incrementTurnNumber = function() {
+      return this.turnNumber++;
+    };
+
+    MastermindView.prototype.getFeedback = function(guess, code) {
+      var codeChar, codeIndex, guessChar, guessIndex, response, testCode, testGuess, _i, _j, _k, _len, _len1, _len2;
+      response = '';
+      testGuess = guess.split('');
+      testCode = code.split('');
+      for (guessIndex = _i = 0, _len = testGuess.length; _i < _len; guessIndex = ++_i) {
+        guessChar = testGuess[guessIndex];
+        if (testCode[guessIndex] === guessChar) {
+          response += 'B';
+          testGuess[guessIndex] = 'Q';
+          testCode[guessIndex] = 'X';
+        }
+      }
+      for (codeIndex = _j = 0, _len1 = testCode.length; _j < _len1; codeIndex = ++_j) {
+        codeChar = testCode[codeIndex];
+        for (guessIndex = _k = 0, _len2 = testGuess.length; _k < _len2; guessIndex = ++_k) {
+          guessChar = testGuess[guessIndex];
+          if (codeChar === guessChar) {
+            response += 'W';
+            testCode[codeIndex] = 'Y';
+            testGuess[guessIndex] = 'Z';
+          }
+        }
+      }
+      return response;
+    };
+
     return MastermindView;
 
   })(Backbone.View);
