@@ -28,7 +28,7 @@ class MastermindView extends Backbone.View
       @incrementTurnNumber()
 
   isValid: ->
-    $('#mm_form').valid()
+    @$('#mm_form').valid()
 
   isLose: ->
     @turnNumber is 9

@@ -44,7 +44,7 @@
     };
 
     MastermindView.prototype.isValid = function() {
-      return $('#mm_form').valid();
+      return this.$('#mm_form').valid();
     };
 
     MastermindView.prototype.isLose = function() {
