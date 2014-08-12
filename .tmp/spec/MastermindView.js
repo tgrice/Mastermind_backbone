@@ -1,21 +1,21 @@
 (function() {
   describe('MastermindView', function() {
-    var makeGuess, makeNguesses;
+    var lastTurnGuess, makeGuess;
     makeGuess = function(guess, view, expectedFeedback) {
       view.$('#guess_input').val(guess);
       view.$('[data-id=guess_button]').click();
       expect(view.$('[data-id=guess-0]').html()).toEqual(guess);
       return expect(view.$('[data-id=feedback-0]').html()).toEqual(expectedFeedback);
     };
-    makeNguesses = function(guess, view, numberOfGuesses) {
-      var i, _results;
-      i = 0;
-      _results = [];
-      while (i < numberOfGuesses) {
-        view.$('#guess_input').val(guess);
-        _results.push(view.$('[data-id=guess_button]').click());
+    lastTurnGuess = function(guess, view, guessNum) {
+      var x, _i;
+      for (x = _i = 0; _i <= 9; x = ++_i) {
+        makeGuess('1111', view, '');
       }
-      return _results;
+      view.$('#guess_input').val('1111');
+      view.$('[data-id=guess_button]').click();
+      expect(view.$('[data-id=guess-' + guessNum + ']').html()).toEqual('1111');
+      return expect(view.$('[data-id=feedback-' + guessNum + ']').html()).toEqual('Game Over');
     };
     it('can populte text box', function() {
       var view;
@@ -95,10 +95,16 @@
       view = new MastermindView().render();
       return makeGuess('0043', view, 'Victory');
     });
-    return xit('Can Lose', function() {
+    it('Can Lose', function() {
       var view;
       view = new MastermindView().render();
-      return makeGuess('1111', view, 'Game Over');
+      return lastTurnGuess('1111', view, 9);
+    });
+    return it('Shows hidden cell with code when lose occurs', function() {
+      var view;
+      view = new MastermindView().render();
+      lastTurnGuess('1111', view, 9);
+      return expect(view.$('#reveal').html()).toEqual('0043');
     });
   });
 

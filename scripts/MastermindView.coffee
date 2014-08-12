@@ -15,15 +15,20 @@ class MastermindView extends Backbone.View
     '0043'
 
   makeGuess: ->
-    guess = @$('#guess_input').val()
-    feedback = @getFeedback(guess, @code)
-    if @isLose()
-      feedback = 'Game Over'
-    if @isWin(guess)
-      feedback = 'Victory'
-    @$('[data-id=guess-' + @turnNumber + ']').html(guess)
-    @$('[data-id=feedback-' + @turnNumber + ']').html(feedback)
-    @incrementTurnNumber()
+    if @isValid()
+      guess = @$('#guess_input').val()
+      feedback = @getFeedback(guess, @code)
+      if @isLose()
+        feedback = 'Game Over'
+      if @isWin(guess)
+        feedback = 'Victory'
+        @$('#reveal').show()
+      @$('[data-id=guess-' + @turnNumber + ']').html(guess)
+      @$('[data-id=feedback-' + @turnNumber + ']').html(feedback)
+      @incrementTurnNumber()
+
+  isValid: ->
+    $('#mm_form').valid()
 
   isLose: ->
     @turnNumber is 9

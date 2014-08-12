@@ -6,11 +6,13 @@ describe 'MastermindView', ->
     expect(view.$('[data-id=guess-0]').html()).toEqual(guess)
     expect(view.$('[data-id=feedback-0]').html()).toEqual(expectedFeedback)
 
-  makeNguesses = (guess, view, numberOfGuesses) ->
-    i = 0
-    while i < numberOfGuesses
-      view.$('#guess_input').val(guess)
-      view.$('[data-id=guess_button]').click()
+  lastTurnGuess = (guess, view, guessNum) ->
+    for x in [0..9]
+      makeGuess('1111', view, '')
+    view.$('#guess_input').val('1111')
+    view.$('[data-id=guess_button]').click()
+    expect(view.$('[data-id=guess-' + guessNum + ']').html()).toEqual('1111')
+    expect(view.$('[data-id=feedback-' + guessNum + ']').html()).toEqual('Game Over')
 
   it 'can populte text box', ->
     view = new MastermindView().render()
@@ -76,9 +78,14 @@ describe 'MastermindView', ->
     view = new MastermindView().render()
     makeGuess('0043', view, 'Victory')
 
-  xit 'Can Lose', ->
+  it 'Can Lose', ->
     view = new MastermindView().render()
-    makeGuess('1111', view, 'Game Over')
+    lastTurnGuess('1111', view, 9)
+
+  it 'Shows hidden cell with code when lose occurs', ->
+    view = new MastermindView().render()
+    lastTurnGuess('1111', view, 9)
+    expect(view.$('#reveal').html()).toEqual('0043')
 
 
 

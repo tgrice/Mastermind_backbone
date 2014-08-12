@@ -27,17 +27,24 @@
 
     MastermindView.prototype.makeGuess = function() {
       var feedback, guess;
-      guess = this.$('#guess_input').val();
-      feedback = this.getFeedback(guess, this.code);
-      if (this.isLose()) {
-        feedback = 'Game Over';
+      if (this.isValid()) {
+        guess = this.$('#guess_input').val();
+        feedback = this.getFeedback(guess, this.code);
+        if (this.isLose()) {
+          feedback = 'Game Over';
+        }
+        if (this.isWin(guess)) {
+          feedback = 'Victory';
+          this.$('#reveal').show();
+        }
+        this.$('[data-id=guess-' + this.turnNumber + ']').html(guess);
+        this.$('[data-id=feedback-' + this.turnNumber + ']').html(feedback);
+        return this.incrementTurnNumber();
       }
-      if (this.isWin(guess)) {
-        feedback = 'Victory';
-      }
-      this.$('[data-id=guess-' + this.turnNumber + ']').html(guess);
-      this.$('[data-id=feedback-' + this.turnNumber + ']').html(feedback);
-      return this.incrementTurnNumber();
+    };
+
+    MastermindView.prototype.isValid = function() {
+      return $('#mm_form').valid();
     };
 
     MastermindView.prototype.isLose = function() {
