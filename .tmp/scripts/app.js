@@ -1,6 +1,12 @@
 (function() {
   $(function() {
-    $('[data-id=container]').html(new MastermindView().render().el);
+    var gen;
+    gen = new CodeGenerator();
+    $('[data-id=container]').html(new MastermindView({
+      model: new Game({
+        code: gen.createCode().join("")
+      })
+    }).render().el);
     $('#guess_input').focus();
     return $("#mm_form").validate({
       rules: {

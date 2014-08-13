@@ -1,5 +1,9 @@
 describe 'MastermindView', ->
 
+  createMastermindView = () ->
+    game = new Game({code: '0043'})
+    new MastermindView(model: game)
+
   makeGuess = (guess, view, expectedFeedback) ->
     view.$('#guess_input').val(guess)
     view.$('[data-id=guess_button]').click()
@@ -12,109 +16,88 @@ describe 'MastermindView', ->
     view.$('#guess_input').val('1111')
     view.$('[data-id=guess_button]').click()
     expect(view.$('[data-id=guess-' + guessNum + ']').html()).toEqual('1111')
-    expect(view.$('[data-id=feedback-' + guessNum + ']').html()).toEqual('Game Over')
-
-  it 'can populte text box', ->
-    view = new MastermindView().render()
-    view.$('#guess_input').val(1234)
-    expect(view.$('#guess_input').val()).toEqual('1234')
-
-  it 'Displays first guess correctly', ->
-    view = new MastermindView().render()
-    view.$('#guess_input').val(1234)
-    view.$('[data-id=guess_button]').click()
-    expect(view.$('[data-id=guess-0]').html()).toEqual('1234')
-
-  it 'Displays second guess correctly', ->
-    view = new MastermindView().render()
-    view.$('#guess_input').val(1234)
-    view.$('[data-id=guess_button]').click()
-    expect(view.$('[data-id=guess-0]').html()).toEqual('1234')
-    view.$('#guess_input').val(5678)
-    view.$('[data-id=guess_button]').click()
-    expect(view.$('[data-id=guess-1]').html()).toEqual('5678')
+    expect(view.$('[data-id=feedback-' + guessNum + ']').html()).toEqual('Game Over 0043')
 
   it 'Gives blank feedback', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('1111', view, '')
 
   it 'Gives feedback of W', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('1322', view, 'W')
 
   it 'Gives feedback of B', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('1011', view, 'B')
 
   it 'Gives feedback of WW', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('4311', view, 'WW')
 
   it 'Gives feedback of WWW', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('4301', view, 'WWW')
 
   it 'Gives feedback of BB', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('0011', view, 'BB')
 
   it 'Gives feedback of BBB', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('0045', view, 'BBB')
 
   it 'Gives feedback of BBWW', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('0034', view, 'BBWW')
 
   it 'Gives feedback of BWWW', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('0430', view, 'BWWW')
 
   it 'Gives feedback of WWWW', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('4300', view, 'WWWW')
 
   it 'Can Win', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     makeGuess('0043', view, 'Victory')
 
   it 'Can Lose', ->
-    view = new MastermindView().render()
+    view = createMastermindView().render()
     lastTurnGuess('1111', view, 9)
 
-  it 'Shows hidden cell with code when lose occurs', ->
-    view = new MastermindView().render()
+  it 'Disables guess button on a win', ->
+    view = createMastermindView().render()
+    view.$('#guess_input').val('0043')
+    view.$('[data-id=guess_button]').click()
+    expect(view.$('[data-id=guess_button]').prop('disabled')).toBe(true)
+
+  it 'Disables the guess button on a loss', ->
+    view = createMastermindView().render()
     lastTurnGuess('1111', view, 9)
-    expect(view.$('#reveal').html()).toEqual('0043')
+    expect(view.$('[data-id=guess_button]').prop('disabled')).toBe(true)
 
+  it 'Enables the guess button when reset button clicked', ->
+    view = createMastermindView().render()
+    lastTurnGuess('1111', view, 9)
+    view.$('[data-id=reset-button]').click()
+    expect(view.$('[data-id=guess_button]').prop('disabled')).toBe(false)
 
+  it 'clears the table when reset button clicked', ->
+    view = createMastermindView().render()
+    lastTurnGuess('1111', view, 9)
+    view.$('[data-id=reset-button]').click()
+    for x in [0..9]
+      expect(view.$('[data-id=guess-' + x + ']').html()).toBe('')
+      expect(view.$('[data-id=feedback-' + x + ']').html()).toBe('')
 
+  it 'Sets turnNumber to 0 when reset button is clicked', ->
+    view = createMastermindView().render()
+    lastTurnGuess('1111', view, 9)
+    view.$('[data-id=reset-button]').click()
+    expect(view.turnNumber).toBe(0)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  it 'Creates a new code when reset button is clicked', ->
+    view = createMastermindView().render()
+    view.$('[data-id=reset-button]').click()
+    expect(view.getCode()).toNotBe('0043')

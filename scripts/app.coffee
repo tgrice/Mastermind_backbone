@@ -1,5 +1,6 @@
 $ ->
-  $('[data-id=container]').html(new MastermindView().render().el)
+  gen = new CodeGenerator()
+  $('[data-id=container]').html(new MastermindView(model: new Game({code: gen.createCode().join("")})).render().el)
   $('#guess_input').focus()
 
   $("#mm_form").validate({

@@ -18,28 +18,28 @@
     };
 
     MastermindView.prototype.events = {
-      'click [data-id=guess_button]': 'makeGuess'
+      'click [data-id=guess_button]': 'makeGuess',
+      'click [data-id=reset-button]': 'reset'
     };
 
     MastermindView.prototype.turnNumber = 0;
 
-    MastermindView.prototype.code = '0043';
+    MastermindView.prototype.getCode = function() {
+      return this.model.get("code");
+    };
 
     MastermindView.prototype.makeGuess = function() {
       var feedback, guess;
       if (this.isValid()) {
         guess = this.$('#guess_input').val();
-        feedback = this.getFeedback(guess, this.code);
+        feedback = this.getFeedback(guess, this.getCode());
         if (this.isLose()) {
-          feedback = 'Game Over';
+          feedback = this.gameOver();
         }
         if (this.isWin(guess)) {
-          feedback = 'Victory';
-          this.$('#reveal').show();
+          feedback = this.victory();
         }
-        this.$('[data-id=guess-' + this.turnNumber + ']').html(guess);
-        this.$('[data-id=feedback-' + this.turnNumber + ']').html(feedback);
-        return this.incrementTurnNumber();
+        return this.updateBoard(guess, feedback);
       }
     };
 
@@ -47,34 +47,33 @@
       return this.$('#mm_form').valid();
     };
 
-    MastermindView.prototype.isLose = function() {
-      return this.turnNumber === 9;
-    };
-
-    MastermindView.prototype.isWin = function(guess) {
-      return guess === this.code;
-    };
-
-    MastermindView.prototype.incrementTurnNumber = function() {
-      return this.turnNumber++;
-    };
-
     MastermindView.prototype.getFeedback = function(guess, code) {
-      var codeChar, codeIndex, guessChar, guessIndex, response, testCode, testGuess, _i, _j, _k, _len, _len1, _len2;
+      var response, testCode, testGuess;
       response = '';
       testGuess = guess.split('');
       testCode = code.split('');
+      response += this.checkNumberAndPosition(testGuess, testCode, response);
+      return this.checkJustNumber(testGuess, testCode, response);
+    };
+
+    MastermindView.prototype.checkNumberAndPosition = function(testGuess, testCode, response) {
+      var guessChar, guessIndex, _i, _len;
       for (guessIndex = _i = 0, _len = testGuess.length; _i < _len; guessIndex = ++_i) {
         guessChar = testGuess[guessIndex];
         if (testCode[guessIndex] === guessChar) {
-          response += 'B';
           testGuess[guessIndex] = 'Q';
           testCode[guessIndex] = 'X';
+          response += 'B';
         }
       }
-      for (codeIndex = _j = 0, _len1 = testCode.length; _j < _len1; codeIndex = ++_j) {
+      return response;
+    };
+
+    MastermindView.prototype.checkJustNumber = function(testGuess, testCode, response) {
+      var codeChar, codeIndex, guessChar, guessIndex, _i, _j, _len, _len1;
+      for (codeIndex = _i = 0, _len = testCode.length; _i < _len; codeIndex = ++_i) {
         codeChar = testCode[codeIndex];
-        for (guessIndex = _k = 0, _len2 = testGuess.length; _k < _len2; guessIndex = ++_k) {
+        for (guessIndex = _j = 0, _len1 = testGuess.length; _j < _len1; guessIndex = ++_j) {
           guessChar = testGuess[guessIndex];
           if (codeChar === guessChar) {
             response += 'W';
@@ -84,6 +83,56 @@
         }
       }
       return response;
+    };
+
+    MastermindView.prototype.isLose = function() {
+      return this.turnNumber === 9;
+    };
+
+    MastermindView.prototype.gameOver = function() {
+      var feedback;
+      this.$('[data-id=guess_button]').prop('disabled', true);
+      return feedback = 'Game Over ' + this.getCode();
+    };
+
+    MastermindView.prototype.isWin = function(guess) {
+      return guess === this.getCode();
+    };
+
+    MastermindView.prototype.victory = function() {
+      var feedback;
+      this.$('[data-id=guess_button]').prop('disabled', true);
+      return feedback = 'Victory';
+    };
+
+    MastermindView.prototype.updateBoard = function(guess, feedback) {
+      this.$('[data-id=guess-' + this.turnNumber + ']').html(guess);
+      this.$('[data-id=feedback-' + this.turnNumber + ']').html(feedback);
+      return this.incrementTurnNumber();
+    };
+
+    MastermindView.prototype.incrementTurnNumber = function() {
+      return this.turnNumber++;
+    };
+
+    MastermindView.prototype.reset = function() {
+      this.resetBoard();
+      return this.newCode();
+    };
+
+    MastermindView.prototype.resetBoard = function() {
+      this.$('[data-id=guess_button]').prop('disabled', false);
+      this.$('.guess').empty();
+      this.$('.feedback').empty();
+      return this.turnNumber = 0;
+    };
+
+    MastermindView.prototype.newCode = function() {
+      var cg;
+      cg = new CodeGenerator();
+      return this.model.set({
+        code: cg.createCode().join("")
+      });
     };
 
     return MastermindView;
