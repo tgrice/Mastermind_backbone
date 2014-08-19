@@ -125,17 +125,11 @@
       view.$('[data-id=reset-button]').click();
       return expect(view.turnNumber).toBe(0);
     });
-    it('Creates a new code when reset button is clicked', function() {
+    return it('Creates a new code when reset button is clicked', function() {
       var view;
       view = createMastermindView().render();
       view.$('[data-id=reset-button]').click();
       return expect(view.getCode()).toNotBe('0043');
-    });
-    return it('Guess of 111 is not valid', function() {
-      var view;
-      view = createMastermindView().render();
-      view.$('#guess_input').val(111);
-      return expect(view.isValid()).toBe(false);
     });
   });
 

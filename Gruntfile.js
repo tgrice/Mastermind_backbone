@@ -10,6 +10,11 @@ module.exports = function (grunt) {
         files: {
           ".tmp/scripts/templates.js": ["scripts/templates/*.ejs"]
         }
+      },
+      deploy: {
+        files: {
+          "mastermind_server/MM.WebApi/Scripts/templates.js": ["scripts/templates/*.ejs"]
+        }
       }
     },
 
@@ -29,8 +34,28 @@ module.exports = function (grunt) {
         src: '**/*.coffee',
         dest: '.tmp/spec',
         ext: '.js'
+      },
+      deployScripts: {
+        expand: true,
+        flatten: true,
+        cwd: 'scripts',
+        src: '**/**/*.coffee',
+        dest: 'mastermind_server/MM.WebApi/Scripts',
+        ext: '.js'
       }
     },
+
+    copy: {
+      bower_components: {
+        src: 'bower_components/**',
+        dest: 'mastermind_server/MM.WebApi/Scripts/',
+      },
+      styles: {
+        src: 'styles/**',
+        dest: 'mastermind_server/MM.WebApi/Content/',
+      }
+    },
+
     connect: {
       server: {
         options: {
@@ -43,8 +68,9 @@ module.exports = function (grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-jst');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.registerTask('default', ['jst']);
-  grunt.registerTask('compile', ['jst', 'coffee']);
+  grunt.registerTask('compile', ['jst', 'coffee', 'copy']);
   grunt.registerTask('build', ['jst', 'coffee']);
 }

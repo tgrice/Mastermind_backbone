@@ -18,12 +18,18 @@ class MastermindView extends Backbone.View
   makeGuess: ->
     if @isValid()
       guess = @$('#guess_input').val()
-      feedback = @getFeedback(guess, @getCode())
+      $.get("api/game/7", {'guess': guess}, @guessCallback)
+      #feedback = @getFeedback(guess, @getCode())
       if @isLose()
         feedback = @gameOver()
       if @isWin(guess)
         feedback = @victory()
       @updateBoard(guess, feedback)
+
+  guessCallback: (a, b, c) =>
+    console.log('running!')
+    feedback = a
+    # do something with feedback
 
   isValid: ->
     @$('#mm_form').valid()

@@ -1,5 +1,6 @@
 (function() {
   var MastermindView,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
     __hasProp = {}.hasOwnProperty,
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
@@ -7,6 +8,7 @@
     __extends(MastermindView, _super);
 
     function MastermindView() {
+      this.foobar = __bind(this.foobar, this);
       return MastermindView.__super__.constructor.apply(this, arguments);
     }
 
@@ -32,7 +34,9 @@
       var feedback, guess;
       if (this.isValid()) {
         guess = this.$('#guess_input').val();
-        feedback = this.getFeedback(guess, this.getCode());
+        $.get("api/game/7", {
+          'guess': guess
+        }, this.foobar);
         if (this.isLose()) {
           feedback = this.gameOver();
         }
@@ -41,6 +45,10 @@
         }
         return this.updateBoard(guess, feedback);
       }
+    };
+
+    MastermindView.prototype.foobar = function(a, b, c) {
+      return console.log('running!');
     };
 
     MastermindView.prototype.isValid = function() {
