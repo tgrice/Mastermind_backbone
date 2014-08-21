@@ -12,51 +12,29 @@ class MastermindView extends Backbone.View
   turnNumber:
     0
 
+  guess:
+    ""
+
   getCode: ->
     @model.get("code")
 
   makeGuess: ->
     if @isValid()
-      guess = @$('#guess_input').val()
-      $.get("api/game/7", {'guess': guess}, @guessCallback)
+      @guess = @$('#guess_input').val()
+      @$('[data-id=guess-' + @turnNumber + ']').html(guess)
+      $.get("api/game/7", {'guess': @guess, 'code': @getCode()}, @guessCallback)
       #feedback = @getFeedback(guess, @getCode())
-      if @isLose()
-        feedback = @gameOver()
-      if @isWin(guess)
-        feedback = @victory()
-      @updateBoard(guess, feedback)
 
   guessCallback: (a, b, c) =>
-    console.log('running!')
     feedback = a
-    # do something with feedback
+    if @isLose() 
+      feedback = @gameOver()
+    if @isWin()
+      feedback = @victory()
+    @updateBoard(feedback)
 
   isValid: ->
     @$('#mm_form').valid()
-
-  getFeedback: (guess, code) ->
-    response = ''
-    testGuess = guess.split('')
-    testCode = code.split('')
-    response+= @checkNumberAndPosition(testGuess, testCode, response)
-    @checkJustNumber(testGuess, testCode, response)
-
-  checkNumberAndPosition: (testGuess, testCode, response) ->
-    for guessChar, guessIndex in testGuess
-      if testCode[guessIndex] is guessChar
-        testGuess[guessIndex] = 'Q'
-        testCode[guessIndex] = 'X'
-        response+= 'B'
-    response
-
-  checkJustNumber: (testGuess, testCode, response) ->
-    for codeChar, codeIndex in testCode
-      for guessChar, guessIndex in testGuess
-        if codeChar is guessChar
-          response+= 'W'
-          testCode[codeIndex] = 'Y'
-          testGuess[guessIndex] = 'Z'
-    response
 
   isLose: ->
     @turnNumber is 9
@@ -65,15 +43,15 @@ class MastermindView extends Backbone.View
     @$('[data-id=guess_button]').prop('disabled', true)
     feedback = 'Game Over ' + @getCode()
 
-  isWin: (guess) ->
-    guess is @getCode()
+  isWin: ->
+    @guess is @getCode()
 
   victory: ->
     @$('[data-id=guess_button]').prop('disabled', true)
     feedback = 'Victory'
 
-  updateBoard: (guess, feedback) ->
-    @$('[data-id=guess-' + @turnNumber + ']').html(guess)
+  updateBoard: (feedback) ->
+    @$('[data-id=guess-' + @turnNumber + ']').html(@guess)
     @$('[data-id=feedback-' + @turnNumber + ']').html(feedback)
     @incrementTurnNumber()
 

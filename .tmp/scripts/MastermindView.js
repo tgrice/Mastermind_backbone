@@ -8,7 +8,7 @@
     __extends(MastermindView, _super);
 
     function MastermindView() {
-      this.foobar = __bind(this.foobar, this);
+      this.guessCallback = __bind(this.guessCallback, this);
       return MastermindView.__super__.constructor.apply(this, arguments);
     }
 
@@ -26,71 +26,37 @@
 
     MastermindView.prototype.turnNumber = 0;
 
+    MastermindView.prototype.guess = "";
+
     MastermindView.prototype.getCode = function() {
       return this.model.get("code");
     };
 
     MastermindView.prototype.makeGuess = function() {
-      var feedback, guess;
       if (this.isValid()) {
-        guess = this.$('#guess_input').val();
-        $.get("api/game/7", {
-          'guess': guess
-        }, this.foobar);
-        if (this.isLose()) {
-          feedback = this.gameOver();
-        }
-        if (this.isWin(guess)) {
-          feedback = this.victory();
-        }
-        return this.updateBoard(guess, feedback);
+        this.guess = this.$('#guess_input').val();
+        this.$('[data-id=guess-' + this.turnNumber + ']').html(guess);
+        return $.get("api/game/7", {
+          'guess': this.guess,
+          'code': this.getCode()
+        }, this.guessCallback);
       }
     };
 
-    MastermindView.prototype.foobar = function(a, b, c) {
-      return console.log('running!');
+    MastermindView.prototype.guessCallback = function(a, b, c) {
+      var feedback;
+      feedback = a;
+      if (this.isLose()) {
+        feedback = this.gameOver();
+      }
+      if (this.isWin()) {
+        feedback = this.victory();
+      }
+      return this.updateBoard(feedback);
     };
 
     MastermindView.prototype.isValid = function() {
       return this.$('#mm_form').valid();
-    };
-
-    MastermindView.prototype.getFeedback = function(guess, code) {
-      var response, testCode, testGuess;
-      response = '';
-      testGuess = guess.split('');
-      testCode = code.split('');
-      response += this.checkNumberAndPosition(testGuess, testCode, response);
-      return this.checkJustNumber(testGuess, testCode, response);
-    };
-
-    MastermindView.prototype.checkNumberAndPosition = function(testGuess, testCode, response) {
-      var guessChar, guessIndex, _i, _len;
-      for (guessIndex = _i = 0, _len = testGuess.length; _i < _len; guessIndex = ++_i) {
-        guessChar = testGuess[guessIndex];
-        if (testCode[guessIndex] === guessChar) {
-          testGuess[guessIndex] = 'Q';
-          testCode[guessIndex] = 'X';
-          response += 'B';
-        }
-      }
-      return response;
-    };
-
-    MastermindView.prototype.checkJustNumber = function(testGuess, testCode, response) {
-      var codeChar, codeIndex, guessChar, guessIndex, _i, _j, _len, _len1;
-      for (codeIndex = _i = 0, _len = testCode.length; _i < _len; codeIndex = ++_i) {
-        codeChar = testCode[codeIndex];
-        for (guessIndex = _j = 0, _len1 = testGuess.length; _j < _len1; guessIndex = ++_j) {
-          guessChar = testGuess[guessIndex];
-          if (codeChar === guessChar) {
-            response += 'W';
-            testCode[codeIndex] = 'Y';
-            testGuess[guessIndex] = 'Z';
-          }
-        }
-      }
-      return response;
     };
 
     MastermindView.prototype.isLose = function() {
@@ -103,8 +69,8 @@
       return feedback = 'Game Over ' + this.getCode();
     };
 
-    MastermindView.prototype.isWin = function(guess) {
-      return guess === this.getCode();
+    MastermindView.prototype.isWin = function() {
+      return this.guess === this.getCode();
     };
 
     MastermindView.prototype.victory = function() {
@@ -113,8 +79,8 @@
       return feedback = 'Victory';
     };
 
-    MastermindView.prototype.updateBoard = function(guess, feedback) {
-      this.$('[data-id=guess-' + this.turnNumber + ']').html(guess);
+    MastermindView.prototype.updateBoard = function(feedback) {
+      this.$('[data-id=guess-' + this.turnNumber + ']').html(this.guess);
       this.$('[data-id=feedback-' + this.turnNumber + ']').html(feedback);
       return this.incrementTurnNumber();
     };
