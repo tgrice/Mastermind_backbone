@@ -2,16 +2,17 @@
   "framework": "jasmine",
   "before_tests": "grunt compile",
   "src_files": [
-    ".tmp/scripts/templates.js",
-    "bower_components/jquery/jquery.js",
-    "bower_components/jasmine-jquery/lib/jasmine-jquery.js",
-    "bower_components/jquery-validation/dist/additonal-methods.js",
-    "bower_components/jquery-validation/dist/additonal-methods.min.js",
-    "bower_components/jquery-validation/dist/jquery.validate.js",
-    "bower_components/jquery-validation/dist/jquery.validate.min.js",
-    "bower_components/underscore/underscore.js",
-    "bower_components/backbone/backbone.js",
-    ".tmp/scripts/**/*.js",
-    ".tmp/spec/**/*.js"
+    ".tmp/app/scripts/templates.js",
+    "app/bower_components/sinonjs/sinon.js",
+    "app/bower_components/jquery/jquery.js",
+    "app/bower_components/jasmine-jquery/lib/jasmine-jquery.js",
+    "app/bower_components/jquery-validation/dist/additonal-methods.js",
+    "app/bower_components/jquery-validation/dist/additonal-methods.min.js",
+    "app/bower_components/jquery-validation/dist/jquery.validate.js",
+    "app/bower_components/jquery-validation/dist/jquery.validate.min.js",
+    "app/bower_components/underscore/underscore.js",
+    "app/bower_components/backbone/backbone.js",
+    ".tmp/app/scripts/MastermindView.js",
+    ".tmp/app/spec/MastermindView.js"
   ]
 }
