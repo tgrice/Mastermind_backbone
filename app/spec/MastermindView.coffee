@@ -3,22 +3,23 @@ describe 'MastermindView', ->
 
   renderMastermindView = ->
     game = new Backbone.Model
-      code: '0043'
       id: '00000000-0000-0000-0000-000000000000'
       turnNumber: 0
+      code: '0043'
       guess: ''
+      gameFeedback: ''
       isWin: false
       isLoss: false
     view  = new MastermindView
       model: game
     view.render()
 
-  mockResponse = (data, url, method='GET', status=200, headers={'application/json'}) ->
+  mockResponse = (data, url, method='GET', status=200, headers={'Content-Type': 'application/json'}) ->
     fakeServer.respondWith(method, url, [status, headers, JSON.stringify(data)])
 
   playRoundOfGame = (expectedFeedback, view, guess) ->
     view.$('[data-id=guess-input]').val(guess)
-    mockResponse(expectedFeedback, 'api/game/00000000-0000-0000-0000-000000000000?guess=' + guess + '&code=0043')
+    mockResponse(expectedFeedback, 'api/game/00000000-0000-0000-0000-000000000000', 'PUT')
     view.$('[data-id=guess-button]').click()
     fakeServer.respond()
 
@@ -31,21 +32,32 @@ describe 'MastermindView', ->
   afterEach ->
     fakeServer.restore()
 
-  xit 'renders template', ->
+  it 'renders template', ->
     view = renderMastermindView()
     expect(view.$('[data-id=game-table]')).toExist()
 
   describe 'clicking reset', ->
 
-    xit 'resets board', ->
+    it 'resets board', ->
       view = renderMastermindView()
-      playRoundOfGame('', view, '2222')
+      mastermindGame = {gameFeedback: 'B', turnNumber: 1, isWin: false, isLoss: false}
+      playRoundOfGame(mastermindGame, view, '0222')
+
+      expect(view.$('[data-id=guess-0]').html()).toBe('0222')
+      expect(view.$('[data-id=feedback-0]').html()).toBe('B')
+
+      fakeServer.restore()
+      fakeServer = sinon.fakeServer.create()
+
+      game = {id: 'be5eb589-64db-416e-8ef2-222549d50a79', turnNumber: 0, code: '1234', guess: '', gameFeedback: '', isWin: false, isLoss: false}
+      mockResponse(mastermindGame, 'api/CreateGame', 'POST')
       view.$('[data-id=reset-button]').click()
+      fakeserver.respond()
 
       expect(view.$('.guess').html()).toBe('')
       expect(view.$('.feedback').html()).toBe('')
 
-    xit 'creates new game and creates new secret code', ->
+    it 'creates new game and creates new secret code', ->
       view = renderMastermindView()
       mockResponse(createTurnObject(1, 0, '1234', '', false, false), 'api/CreateGame')
       view.$('[data-id=reset-button]').click()
@@ -55,35 +67,41 @@ describe 'MastermindView', ->
 
     it 'inserts guess into table', ->
       view = renderMastermindView()
-      #playRoundOfGame('', view, '1111')
-      view.$('[data-id=guess-input]').val('1111')
-      mockResponse({feedback: ''}, 'api/game/00000000-0000-0000-0000-000000000000?guess=1111', 'PUT')
-      view.$('[data-id=guess-button]').click()
-      fakeServer.respond()
-      console.log "requestBoday"
-      console.log fakeServer
-      console.log _.last(fakeServer.requests).requestBody
-      console.log view.el.html
+      mastermindGame = {gameFeedback: '', turnNumber: 1, isWin: false, isLoss: false}
+      playRoundOfGame(mastermindGame, view, '1111')
 
       expect(view.$('[data-id=guess-0]').html()).toBe('1111')
 
-    xit 'inserts feedback into table', ->
+    it 'inserts feedback into table', ->
       view = renderMastermindView()
-      playRoundOfGame('BBW', view, '0037')
+      mastermindGame = {gameFeedback: 'BBW', turnNumber: 1, isWin: false, isLoss: false}
+      playRoundOfGame(mastermindGame, view, '0037')
 
       expect(view.$('[data-id=feedback-0]').html()).toBe('BBW')
 
-    xit 'gives correct feedback when a win occurs', ->
+    it 'gives correct feedback when a win occurs', ->
       view = renderMastermindView()
-      playRoundOfGame('Victory', view, '0043')
+      mastermindGame = {gameFeedback: 'Victory!', turnNumber: 1, isWin: false, isLoss: false}
+      playRoundOfGame(mastermindGame, view, '0043')
 
-      expect(view.$('[data-id=feedback-0]').html()).toBe('Victory')
+      expect(view.$('[data-id=feedback-0]').html()).toBe('Victory!')
 
-    xit 'gives correct feedback when a lose occurs', ->
+    it 'gives correct feedback when a lose occurs', ->
       view = renderMastermindView()
-      playRoundOfGame('', view, '1111') for [0..9]
+      mastermindGame = {gameFeedback: 'Game Over!/nCode:0043', turnNumber: 9, isWin: false, isLoss: false}
+      playRoundOfGame(mastermindGame, view, '1111') for [0..9]
 
-      expect(view.$('[data-id=feedback-9]').html()).toBe('Game Over 0043')
+      expect(view.$('[data-id=feedback-9]').html()).toBe('Game Over!/nCode:0043')
+
+    xit 'disables the guess button when a win occurs', ->
+      view = renderMastermindView()
+      mastermindGame = {gameFeedback: 'Game Over!/nCode:0043', turnNumber: 9, isWin: false, isLoss: false}
+      playRoundOfGame(mastermindGame, view, '1111') for [0..9]
+
+      expect(view.$('[data-id=feedback-9]').html()).toBe('Game Over!/nCode:0043')
+      expect(view.$('[data-id=guess-button]')).prop('disabled').toBe(true)
+
+
 
 
 

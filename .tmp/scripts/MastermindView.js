@@ -8,7 +8,8 @@
     __extends(MastermindView, _super);
 
     function MastermindView() {
-      this.newGameCallback = __bind(this.newGameCallback, this);
+      this.updateTurnNumber = __bind(this.updateTurnNumber, this);
+      this.updateFeedback = __bind(this.updateFeedback, this);
       this.guessSuccessCallback = __bind(this.guessSuccessCallback, this);
       _ref = MastermindView.__super__.constructor.apply(this, arguments);
       return _ref;
@@ -27,27 +28,23 @@
     };
 
     MastermindView.prototype.makeGuess = function() {
+      var _this = this;
       if (this.isValid()) {
-        console.log("guess is valid");
-        console.log(this.model);
-        console.log(this.model.get("id"));
         this.setGuessToModel();
+        return $.ajax({
+          url: "api/game/" + (this.model.get("id")),
+          type: 'PUT',
+          data: {
+            "guess": this.model.get("guess")
+          },
+          success: function(responseData, responseText) {
+            return _this.guessSuccessCallback(responseData);
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            return console.log(textStatus, errorThrown);
+          }
+        });
       }
-      return $.ajax({
-        url: "api/game/" + (this.model.get("id")),
-        type: 'PUT',
-        data: {
-          "guess": this.model.get("guess")
-        },
-        success: function(responseData, responseText) {
-          console.log("this is success");
-          return this.guessSuccessCallback(responseData);
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-          console.log(textStatus, errorThrown);
-          return console.log(jqXHR);
-        }
-      });
     };
 
     MastermindView.prototype.isValid = function() {
@@ -55,50 +52,62 @@
     };
 
     MastermindView.prototype.setGuessToModel = function() {
-      this.model.set("guess", this.$('[data-id=guess-input]').val());
-      return console.log("your guess is: " + (this.model.get("guess")));
+      return this.model.set("guess", this.$('[data-id=guess-input]').val());
     };
 
     MastermindView.prototype.guessSuccessCallback = function(mastermindGame) {
-      console.log("successful guess callback");
-      this.updateGameModel(mastermindGame);
-      console.log(this.model);
+      this.updateFeedback(mastermindGame);
       this.updateBoard();
-      this.isLose();
-      return this.isWin();
+      this.updateTurnNumber(mastermindGame);
+      return this.isGameOver();
     };
 
-    MastermindView.prototype.updateGameModel = function(mastermindGame) {
-      this.model.set("feedback", mastermindGame.get("feedback"));
-      this.model.set("guess", mastermindGame.get("guess"));
-      this.model.set("isWin", mastermindGame.get("isWin"));
-      this.model.set("isLoss", mastermindGame.get("isLoss"));
-      return this.model.set("turnNumber", mastermindGame.get("turnNumber"));
+    MastermindView.prototype.updateFeedback = function(mastermindGame) {
+      return this.model.set("feedback", mastermindGame.gameFeedback);
     };
 
     MastermindView.prototype.updateBoard = function() {
-      this.$("[data-id=guess-" + (this.model.get("TurnNumber")) + "]").html(this.model.get("Guess"));
-      return this.$("[data-id=feedback-" + (this.model.get("TurnNumber")) + "']").html(this.model.get("Feedback"));
+      this.$("[data-id=guess-" + (this.model.get("turnNumber")) + "]").html(this.model.get("guess"));
+      return this.$("[data-id=feedback-" + (this.model.get("turnNumber")) + "]").html(this.model.get("feedback"));
     };
 
-    MastermindView.prototype.isLoss = function() {
-      if (this.model.get("IsLoss") === true) {
-        return this.$('[data-id=guess-button]').prop('disabled', true);
-      }
+    MastermindView.prototype.updateTurnNumber = function(mastermindGame) {
+      return this.model.set("turnNumber", mastermindGame.turnNumber);
     };
 
-    MastermindView.prototype.isWin = function() {
-      if (this.model.get("IsWin") === true) {
+    MastermindView.prototype.isGameOver = function() {
+      if (this.model.get("isLoss") === true || this.model.get("isWin") === true) {
         return this.$('[data-id=guess-button]').prop('disabled', true);
       }
     };
 
     MastermindView.prototype.reset = function() {
-      return $.post("api/CreateGame");
+      var _this = this;
+      return $.ajax({
+        url: "api/CreateGame",
+        type: "POST",
+        success: function(responseData, responseText) {
+          return _this.createNewGameSuccessCallback(responseData);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          return console.log(jqXHR.responseText);
+        }
+      });
     };
 
-    MastermindView.prototype.newGameCallback = function(mastermindGame) {
-      return console.log("click new game is here");
+    MastermindView.prototype.createNewGameSuccessCallback = function(mastermindGameDTO) {
+      var newGame;
+      newGame = new Game({
+        id: mastermindGameDTO.Id,
+        turnNumber: mastermindGameDTO.turnNumber,
+        code: mastermindGameDTO.code,
+        guess: mastermindGameDTO.guess,
+        isWin: mastermindGameDTO.isWin,
+        isLoss: mastermindGameDTO.isLoss
+      });
+      return $('[data-id=container]').html(new MastermindView({
+        model: newGame
+      }).render().el);
     };
 
     return MastermindView;

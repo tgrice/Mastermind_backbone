@@ -11,62 +11,59 @@ class MastermindView extends Backbone.View
 
   makeGuess: ->
     if @isValid()
-      console.log "guess is valid"
-      console.log @model
-      console.log @model.get("id")
       @setGuessToModel()
-      #$.get("api/game/#{@model.get("id")}", {"guess": @model.get("guess")}, @guessSuccessCallback)
-     $.ajax
+      $.ajax
         url: "api/game/#{@model.get("id")}"
         type: 'PUT'
         data: {"guess": @model.get("guess")}
-        success: (responseData, responseText) ->
-          console.log "this is success"
+        success: (responseData, responseText) =>
           @guessSuccessCallback(responseData)
         error: (jqXHR, textStatus, errorThrown) ->
           console.log textStatus, errorThrown
-          console.log jqXHR
 
   isValid: ->
     @$('[data-id=mm-form]').valid()
 
   setGuessToModel: ->
     @model.set("guess", @$('[data-id=guess-input]').val())
-    console.log "your guess is: #{@model.get("guess")}"
 
   guessSuccessCallback: (mastermindGame) =>
-    console.log "successful guess callback"
-    @updateGameModel(mastermindGame)
-    console.log @model
+    @updateFeedback(mastermindGame)
     @updateBoard()
-    @isLose()
-    @isWin()
+    @updateTurnNumber(mastermindGame)
+    @isGameOver()
 
-  updateGameModel: (mastermindGame) ->
-    @model.set("feedback", mastermindGame.get("feedback"))
-    @model.set("guess", mastermindGame.get("guess"))
-    @model.set("isWin", mastermindGame.get("isWin"))
-    @model.set("isLoss", mastermindGame.get("isLoss"))
-    @model.set("turnNumber", mastermindGame.get("turnNumber"))
+  updateFeedback: (mastermindGame) =>
+    @model.set("feedback", mastermindGame.gameFeedback)
 
   updateBoard: ->
-    @$("[data-id=guess-#{@model.get("TurnNumber")}]").html(@model.get("Guess"))
-    @$("[data-id=feedback-#{@model.get("TurnNumber")}']").html(@model.get("Feedback"))
+    @$("[data-id=guess-#{@model.get("turnNumber")}]").html(@model.get("guess"))
+    @$("[data-id=feedback-#{@model.get("turnNumber")}]").html(@model.get("feedback"))
 
-  isLoss: ->
-    if @model.get("IsLoss") is true
-      @$('[data-id=guess-button]').prop('disabled', true)
+  updateTurnNumber: (mastermindGame) =>
+    @model.set("turnNumber", mastermindGame.turnNumber)
 
-  #combine this with isLoss when you get it working
-  isWin: ->
-    if @model.get("IsWin") is true
+  isGameOver: ->
+    if @model.get("isLoss") is true or @model.get("isWin") is true
       @$('[data-id=guess-button]').prop('disabled', true)
 
   reset: ->
-    #maybe just call that object to reset again
-    $.post("api/CreateGame")
+    $.ajax
+      url: "api/CreateGame"
+      type: "POST"
+      success: (responseData, responseText) =>
+        @createNewGameSuccessCallback(responseData)
+      error: (jqXHR, textStatus, errorThrown) ->
+        console.log jqXHR.responseText
 
-  newGameCallback: (mastermindGame) =>
-    console.log "click new game is here"
+  createNewGameSuccessCallback: (mastermindGameDTO) ->
+    newGame = new Game({
+      id: mastermindGameDTO.Id,
+      turnNumber: mastermindGameDTO.turnNumber,
+      code: mastermindGameDTO.code,
+      guess: mastermindGameDTO.guess,
+      isWin: mastermindGameDTO.isWin,
+      isLoss: mastermindGameDTO.isLoss})
+    $('[data-id=container]').html(new MastermindView(model: newGame).render().el)
 
 window.MastermindView = MastermindView

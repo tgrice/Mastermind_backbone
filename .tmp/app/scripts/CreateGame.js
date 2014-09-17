@@ -5,11 +5,12 @@
     function CreateGame() {}
 
     CreateGame.prototype.execute = function() {
+      var _this = this;
       return $.ajax({
         url: "api/CreateGame",
         type: "POST",
         success: function(responseData, responseText) {
-          return this.createGameSuccessCallback(responseData);
+          return _this.createGameSuccessCallback(responseData);
         },
         error: function(jqXHR, textStatus, errorThrown) {
           return console.log(jqXHR.responseText);
@@ -21,12 +22,12 @@
       var newGame;
       console.log('Create new game success');
       newGame = new Game({
-        id: mastermindGame.get("id"),
-        turnNumber: mastermindGame.get("turnNumber"),
-        code: mastermindGame.get("code"),
-        guess: mastermindGame.get("guess"),
-        isWin: mastermindGame.get("isWin"),
-        isLoss: mastermindGame.get("isLoss")
+        id: mastermindGame.Id,
+        turnNumber: mastermindGame.turnNumber,
+        code: mastermindGame.code,
+        guess: mastermindGame.guess,
+        isWin: mastermindGame.isWin,
+        isLoss: mastermindGame.isLoss
       });
       return $('[data-id=container]').html(new MastermindView({
         model: newGame
