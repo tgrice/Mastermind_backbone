@@ -10,7 +10,6 @@ class CreateGame
         console.log jqXHR.responseText
 
   createGameSuccessCallback: (mastermindGame) ->
-    console.log 'Create new game success'
     newGame = new Game({
       id: mastermindGame.Id,
       turnNumber: mastermindGame.turnNumber,

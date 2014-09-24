@@ -20,7 +20,6 @@
 
     CreateGame.prototype.createGameSuccessCallback = function(mastermindGame) {
       var newGame;
-      console.log('Create new game success');
       newGame = new Game({
         id: mastermindGame.Id,
         turnNumber: mastermindGame.turnNumber,

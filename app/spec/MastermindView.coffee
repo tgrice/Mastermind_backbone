@@ -46,21 +46,21 @@ describe 'MastermindView', ->
       expect(view.$('[data-id=guess-0]').html()).toBe('0222')
       expect(view.$('[data-id=feedback-0]').html()).toBe('B')
 
-      fakeServer.restore()
-      fakeServer = sinon.fakeServer.create()
-
-      game = {id: 'be5eb589-64db-416e-8ef2-222549d50a79', turnNumber: 0, code: '1234', guess: '', gameFeedback: '', isWin: false, isLoss: false}
-      mockResponse(mastermindGame, 'api/CreateGame', 'POST')
+      Game = {id: 'be5eb589-64db-416e-8ef2-222549d50a79', turnNumber: 0, code: '1234', guess: '', gameFeedback: '', isWin: false, isLoss: false}
+      mockResponse(Game, 'api/CreateGame', 'POST')
       view.$('[data-id=reset-button]').click()
-      fakeserver.respond()
+      fakeServer.respond()
 
       expect(view.$('.guess').html()).toBe('')
       expect(view.$('.feedback').html()).toBe('')
 
-    it 'creates new game and creates new secret code', ->
+    it 'creates new game', ->
       view = renderMastermindView()
-      mockResponse(createTurnObject(1, 0, '1234', '', false, false), 'api/CreateGame')
+      mastermindGameDTO = {id: 'be5eb589-64db-416e-8ef2-222549d50a79', turnNumber: 0, code: '1234', guess: '', gameFeedback: '', isWin: false, isLoss: false}
+      mockResponse(mastermindGameDTO, 'api/CreateGame', 'POST')
       view.$('[data-id=reset-button]').click()
+      fakeServer.respond()
+
       expect(fakeServer.requests[0].url).toBe('api/CreateGame')
 
   describe 'clicking guess', ->
@@ -93,14 +93,27 @@ describe 'MastermindView', ->
 
       expect(view.$('[data-id=feedback-9]').html()).toBe('Game Over!/nCode:0043')
 
-    xit 'disables the guess button when a win occurs', ->
+    it 'disables the guess button when a loss occurs', ->
       view = renderMastermindView()
-      mastermindGame = {gameFeedback: 'Game Over!/nCode:0043', turnNumber: 9, isWin: false, isLoss: false}
+      mastermindGame = {gameFeedback: 'Game Over!/nCode:0043', turnNumber: 9, isWin: false, isLoss: true}
       playRoundOfGame(mastermindGame, view, '1111') for [0..9]
 
-      expect(view.$('[data-id=feedback-9]').html()).toBe('Game Over!/nCode:0043')
-      expect(view.$('[data-id=guess-button]')).prop('disabled').toBe(true)
+      expect(view.$('[data-id=guess-button]').attr('disabled')).toBe('disabled')
 
+    it 'disables the guess button when a win occurs', ->
+      view = renderMastermindView()
+      mastermindGame = {gameFeedback: 'Victory!', turnNumber: 1, isWin: true, isLoss: false}
+      playRoundOfGame(mastermindGame, view, '1111') for [0..9]
+
+      expect(view.$('[data-id=guess-button]').attr('disabled')).toBe('disabled')
+
+  describe 'guess input vaidation', ->
+
+    it 'does not allow a guess shorter than 4 digits', ->
+      view = renderMastermindView()
+      view.$('[data-id=guess-input]').val('123')
+
+      expect(view.isValid()).toBe(false)
 
 
 

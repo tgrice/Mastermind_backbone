@@ -9,16 +9,17 @@
 
     function MastermindView() {
       this.updateTurnNumber = __bind(this.updateTurnNumber, this);
+      this.updateGameStatus = __bind(this.updateGameStatus, this);
       this.updateFeedback = __bind(this.updateFeedback, this);
       this.guessSuccessCallback = __bind(this.guessSuccessCallback, this);
       _ref = MastermindView.__super__.constructor.apply(this, arguments);
       return _ref;
     }
 
-    MastermindView.prototype.template = JST['app/scripts/templates/Mastermind_template.ejs'];
-
     MastermindView.prototype.render = function() {
-      this.$el.html(this.template());
+      var board;
+      board = new Board();
+      this.$el.html(board.build(9));
       return this;
     };
 
@@ -48,7 +49,7 @@
     };
 
     MastermindView.prototype.isValid = function() {
-      return this.$('[data-id=mm-form]').valid();
+      return true;
     };
 
     MastermindView.prototype.setGuessToModel = function() {
@@ -57,6 +58,7 @@
 
     MastermindView.prototype.guessSuccessCallback = function(mastermindGame) {
       this.updateFeedback(mastermindGame);
+      this.updateGameStatus(mastermindGame);
       this.updateBoard();
       this.updateTurnNumber(mastermindGame);
       return this.isGameOver();
@@ -64,6 +66,11 @@
 
     MastermindView.prototype.updateFeedback = function(mastermindGame) {
       return this.model.set("feedback", mastermindGame.gameFeedback);
+    };
+
+    MastermindView.prototype.updateGameStatus = function(mastermindGame) {
+      this.model.set("isWin", mastermindGame.isWin);
+      return this.model.set("isLoss", mastermindGame.isLoss);
     };
 
     MastermindView.prototype.updateBoard = function() {
@@ -77,7 +84,7 @@
 
     MastermindView.prototype.isGameOver = function() {
       if (this.model.get("isLoss") === true || this.model.get("isWin") === true) {
-        return this.$('[data-id=guess-button]').prop('disabled', true);
+        return this.$('[data-id=guess-button]').attr('disabled', true);
       }
     };
 

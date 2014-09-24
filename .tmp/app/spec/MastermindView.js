@@ -61,7 +61,7 @@
     });
     describe('clicking reset', function() {
       it('resets board', function() {
-        var game, mastermindGame, view;
+        var Game, mastermindGame, view;
         view = renderMastermindView();
         mastermindGame = {
           gameFeedback: 'B',
@@ -72,9 +72,7 @@
         playRoundOfGame(mastermindGame, view, '0222');
         expect(view.$('[data-id=guess-0]').html()).toBe('0222');
         expect(view.$('[data-id=feedback-0]').html()).toBe('B');
-        fakeServer.restore();
-        fakeServer = sinon.fakeServer.create();
-        game = {
+        Game = {
           id: 'be5eb589-64db-416e-8ef2-222549d50a79',
           turnNumber: 0,
           code: '1234',
@@ -83,21 +81,31 @@
           isWin: false,
           isLoss: false
         };
-        mockResponse(mastermindGame, 'api/CreateGame', 'POST');
+        mockResponse(Game, 'api/CreateGame', 'POST');
         view.$('[data-id=reset-button]').click();
-        fakeserver.respond();
+        fakeServer.respond();
         expect(view.$('.guess').html()).toBe('');
         return expect(view.$('.feedback').html()).toBe('');
       });
-      return it('creates new game and creates new secret code', function() {
-        var view;
+      return it('creates new game', function() {
+        var mastermindGameDTO, view;
         view = renderMastermindView();
-        mockResponse(createTurnObject(1, 0, '1234', '', false, false), 'api/CreateGame');
+        mastermindGameDTO = {
+          id: 'be5eb589-64db-416e-8ef2-222549d50a79',
+          turnNumber: 0,
+          code: '1234',
+          guess: '',
+          gameFeedback: '',
+          isWin: false,
+          isLoss: false
+        };
+        mockResponse(mastermindGameDTO, 'api/CreateGame', 'POST');
         view.$('[data-id=reset-button]').click();
+        fakeServer.respond();
         return expect(fakeServer.requests[0].url).toBe('api/CreateGame');
       });
     });
-    return describe('clicking guess', function() {
+    describe('clicking guess', function() {
       it('inserts guess into table', function() {
         var mastermindGame, view;
         view = renderMastermindView();
@@ -148,20 +156,41 @@
         }
         return expect(view.$('[data-id=feedback-9]').html()).toBe('Game Over!/nCode:0043');
       });
-      return xit('disables the guess button when a win occurs', function() {
+      it('disables the guess button when a loss occurs', function() {
         var mastermindGame, view, _i;
         view = renderMastermindView();
         mastermindGame = {
           gameFeedback: 'Game Over!/nCode:0043',
           turnNumber: 9,
           isWin: false,
+          isLoss: true
+        };
+        for (_i = 0; _i <= 9; _i++) {
+          playRoundOfGame(mastermindGame, view, '1111');
+        }
+        return expect(view.$('[data-id=guess-button]').attr('disabled')).toBe('disabled');
+      });
+      return it('disables the guess button when a win occurs', function() {
+        var mastermindGame, view, _i;
+        view = renderMastermindView();
+        mastermindGame = {
+          gameFeedback: 'Victory!',
+          turnNumber: 1,
+          isWin: true,
           isLoss: false
         };
         for (_i = 0; _i <= 9; _i++) {
           playRoundOfGame(mastermindGame, view, '1111');
         }
-        expect(view.$('[data-id=feedback-9]').html()).toBe('Game Over!/nCode:0043');
-        return expect(view.$('[data-id=guess-button]')).prop('disabled').toBe(true);
+        return expect(view.$('[data-id=guess-button]').attr('disabled')).toBe('disabled');
+      });
+    });
+    return describe('guess input vaidation', function() {
+      return it('does not allow a guess shorter than 4 digits', function() {
+        var view;
+        view = renderMastermindView();
+        view.$('[data-id=guess-input]').val('123');
+        return expect(view.isValid()).toBe(false);
       });
     });
   });

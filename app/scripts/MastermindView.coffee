@@ -1,8 +1,8 @@
 class MastermindView extends Backbone.View
-  template: JST['app/scripts/templates/Mastermind_template.ejs']
 
   render: ->
-    @$el.html(@template())
+    board = new Board()
+    @$el.html(board.build(9))
     @
 
   events:
@@ -22,19 +22,24 @@ class MastermindView extends Backbone.View
           console.log textStatus, errorThrown
 
   isValid: ->
-    @$('[data-id=mm-form]').valid()
+    true
 
   setGuessToModel: ->
     @model.set("guess", @$('[data-id=guess-input]').val())
 
   guessSuccessCallback: (mastermindGame) =>
     @updateFeedback(mastermindGame)
+    @updateGameStatus(mastermindGame)
     @updateBoard()
     @updateTurnNumber(mastermindGame)
     @isGameOver()
 
   updateFeedback: (mastermindGame) =>
     @model.set("feedback", mastermindGame.gameFeedback)
+
+  updateGameStatus: (mastermindGame) =>
+    @model.set("isWin", mastermindGame.isWin)
+    @model.set("isLoss", mastermindGame.isLoss)
 
   updateBoard: ->
     @$("[data-id=guess-#{@model.get("turnNumber")}]").html(@model.get("guess"))
@@ -45,7 +50,7 @@ class MastermindView extends Backbone.View
 
   isGameOver: ->
     if @model.get("isLoss") is true or @model.get("isWin") is true
-      @$('[data-id=guess-button]').prop('disabled', true)
+      @$('[data-id=guess-button]').attr('disabled', true)
 
   reset: ->
     $.ajax

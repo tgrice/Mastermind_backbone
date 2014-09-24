@@ -1,5 +1,15 @@
 this["JST"] = this["JST"] || {};
 
+this["JST"]["app/scripts/templates/Guess_input.ejs"] = function(obj) {
+obj || (obj = {});
+var __t, __p = '', __e = _.escape;
+with (obj) {
+__p += '  <form name=\'mm-form\' data-id=\'mm-form\'>\n    <input data-id=\'guess-input\' name=\'guess-input\'/>\n  </form>\n  <div data-id="click-buttons">\n    <button data-id=\'guess-button\' type=\'button\'>Guess</button>\n  </div>\n';
+
+}
+return __p
+};
+
 this["JST"]["app/scripts/templates/Mastermind_template.ejs"] = function(obj) {
 obj || (obj = {});
 var __t, __p = '', __e = _.escape;
