@@ -2,7 +2,7 @@ class MastermindView extends Backbone.View
 
   render: ->
     board = new Board()
-    @$el.html(board.build(9))
+    @$el.html(board.build(9)))
     @
 
   events:

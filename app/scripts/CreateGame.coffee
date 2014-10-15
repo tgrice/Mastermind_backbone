@@ -4,6 +4,7 @@ class CreateGame
     $.ajax
       url: "api/CreateGame"
       type: "POST"
+      #data: {numberOfTurns: turns}
       success: (responseData, responseText) =>
         @createGameSuccessCallback(responseData)
       error: (jqXHR, textStatus, errorThrown) ->
@@ -13,6 +14,7 @@ class CreateGame
     newGame = new Game({
       id: mastermindGame.Id,
       turnNumber: mastermindGame.turnNumber,
+      #numOfTurns: mastermindGame.numOfTurns,
       code: mastermindGame.code,
       guess: mastermindGame.guess,
       isWin: mastermindGame.isWin,

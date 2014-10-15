@@ -1,8 +1,17 @@
-<p>
+<p data-id='rules'>
 Try to guess the pattern, in both order and number, within a selected number of turns. Each guess is made by typing your 4 digit guess into the guess box. Once placed, the computer provides feedback by placing from zero to four B and/or W's. A 'B' is placed for each digit which is correct in both number and position. A 'W' indicates the existence of a correct number placed in the wrong position.
 
 If there are duplicate numbers in the guess, they cannot all be awarded a response unless they correspond to the same number of duplicate numbers in the hidden code. For example, if the hidden code is 1122 and the player guesses 1112, the computer will award two 'B's for the two correct 1's, nothing for the third 1 as there is not a third 1 in the code, and a 'B' for the 2. No indication is given of the fact that the code also includes a second 2.
 
 Once feedback is provided, another guess is made; guesses and feedback continue to alternate until either the player guesses correctly, or the player runs out of turns/gusses.
 </p>
- 
+
+<select data-id='turn-select'>Turns
+  <options value=5> 5 </options>
+  <options value=8> 8 </options>
+  <options value=10> 10 </options>
+  <options value=12> 12 </options>
+  <options value=14> 14 </options>
+  <options value=16> 16 </options>
+</select>
+<button data-id='play' type='button'>Play</button>

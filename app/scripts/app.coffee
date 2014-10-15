@@ -1,5 +1,3 @@
 $ ->
-  gameCreator = new CreateGame()
-  gameCreator.execute()
+  $('[data-id=container]').html(new Mastermind_Template_View().render().el)
 
-  $('[data-id=guess-input]').focus()
