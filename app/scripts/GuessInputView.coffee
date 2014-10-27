@@ -6,12 +6,12 @@ class GuessInputView extends Backbone.View
     @
 
   events:
-    'click [data-id=guess-button]' : 'validate'
+    'click [data-id=guess-button]' : 'makeGuess'
 
-  validate: ->
+  isValid: ->
     @$("[data-id=mm-form]").validate({
       rules: {
-        guess_input: {
+        guessInput: {
           required: true,
           minlength: 4,
           maxlength: 4,
@@ -20,6 +20,23 @@ class GuessInputView extends Backbone.View
       }
     })
     @$('[data-id=mm-form]').valid()
+
+  getGuess: ->
+    @$("[data-id=guessInput]").val()
+
+  makeGuess: ->
+    if @isValid()
+      $.ajax
+        url: "api/game/#{@options.gameDTO.Id}"
+        type: 'PUT'
+        data: {"guess": @getGuess()}
+        success: (responseData, responseText) =>
+          @guessSuccessCallback(responseData)
+        error: (jqXHR, textStatus, errorThrown) ->
+          console.log textStatus, errorThrown
+
+  guessSuccessCallback: (mastermindGame) =>
+    @trigger('makeGuess', mastermindGame)
 
 window.GuessInputView = GuessInputView
 

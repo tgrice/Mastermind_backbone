@@ -1,6 +1,6 @@
 describe 'Board', ->
 
-  it 'expects true to be true', ->
+  it 'board to build', ->
     board = new Board()
-    expect(true).toBe(true)
+    expect(board.build(2)).not.toBeEmpty()
 

@@ -4,11 +4,14 @@
   CreateGame = (function() {
     function CreateGame() {}
 
-    CreateGame.prototype.execute = function() {
+    CreateGame.prototype.execute = function(turns) {
       var _this = this;
       return $.ajax({
         url: "api/CreateGame",
         type: "POST",
+        data: {
+          turns: turns
+        },
         success: function(responseData, responseText) {
           return _this.createGameSuccessCallback(responseData);
         },
@@ -19,18 +22,8 @@
     };
 
     CreateGame.prototype.createGameSuccessCallback = function(mastermindGame) {
-      var newGame;
-      newGame = new Game({
-        id: mastermindGame.Id,
-        turnNumber: mastermindGame.turnNumber,
-        code: mastermindGame.code,
-        guess: mastermindGame.guess,
-        isWin: mastermindGame.isWin,
-        isLoss: mastermindGame.isLoss
-      });
-      return $('[data-id=container]').html(new MastermindView({
-        model: newGame
-      }).render().el);
+      console.log('create game', mastermindGame);
+      return mastermindGame;
     };
 
     return CreateGame;

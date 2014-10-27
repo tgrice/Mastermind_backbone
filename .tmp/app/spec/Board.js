@@ -1,9 +1,9 @@
 (function() {
   describe('Board', function() {
-    return it('expects true to be true', function() {
+    return it('board to build', function() {
       var board;
       board = new Board();
-      return expect(true).toBe(true);
+      return expect(board.build(2)).not.toBeEmpty();
     });
   });
 

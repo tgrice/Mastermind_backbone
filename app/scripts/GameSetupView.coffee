@@ -6,9 +6,10 @@ class GameSetupView extends Backbone.View
     @
 
   events:
-    'click [data-id=play]' : 'startGame'
+    'click [data-id=play]' : 'triggerStartGame'
 
-  startGame: ->
+  triggerStartGame: ->
     turns = @$('[data-id=turn-select]').val()
-    creteGame = new CreateGame()
-    createGame.execute(turns)
+    @trigger('triggerStartGame', turns)
+
+window.GameSetupView = GameSetupView

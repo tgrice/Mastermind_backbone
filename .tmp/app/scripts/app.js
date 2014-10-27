@@ -1,9 +1,6 @@
 (function() {
   $(function() {
-    var gameCreator;
-    gameCreator = new CreateGame();
-    gameCreator.execute();
-    return $('[data-id=guess-input]').focus();
+    return $('[data-id=container]').html(new Mastermind_Template_View().render().el);
   });
 
 }).call(this);

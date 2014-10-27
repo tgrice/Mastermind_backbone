@@ -12,13 +12,15 @@
     "app/bower_components/jquery-validation/dist/jquery.validate.min.js",
     "app/bower_components/underscore/underscore.js",
     "app/bower_components/backbone/backbone.js",
-    ".tmp/app/scripts/MastermindView.js",
-    ".tmp/app/spec/MastermindView.js",
-    ".tmp/app/scripts/CreateGame.js",
-    ".tmp/app/spec/CreateGame.js",
     ".tmp/app/scripts/Board.js",
     ".tmp/app/spec/Board.js",
+    ".tmp/app/scripts/Mastermind_Template_View.js",
+    ".tmp/app/spec/Mastermind_Template_View.js",
     ".tmp/app/scripts/GuessInputView.js",
-    ".tmp/app/spec/GuessInputView.js"
+    ".tmp/app/spec/GuessInputView.js",
+    ".tmp/app/scripts/GameSetupView.js",
+    ".tmp/app/spec/GameSetupView.js",
+    ".tmp/app/scripts/BoardView.js",
+    ".tmp/app/spec/BoardView.js"
   ]
 }
